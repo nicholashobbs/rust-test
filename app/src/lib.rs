@@ -55,8 +55,14 @@ fn view_input(new_todo_title: &str) -> Node<Msg> {
             attrs!{
                 At::Placeholder => "What needs to be done?", 
                 At::AutoFocus => AtValue::None,
-                At::Value => new_todo_title},     
+                At::Value => new_todo_title}     
         ],
+        //button!["save"],
+        button![
+            "save", 
+            ev(Ev::Click, |_| Msg::CreateTodo),
+        ],
+        button!["clear all"],
         input_ev(Ev::Input, Msg::TodoChanged),
         keyboard_ev(Ev::KeyDown, |keyboard_event| {
             IF!(keyboard_event.key() == ENTER_KEY => Msg::CreateTodo)
@@ -70,7 +76,7 @@ fn view_main(model: &Model) -> Node<Msg> {
     div![
         ul![
             model.items.iter().map(|item| {
-                li![item]
+                li![item, button!["destroy"]]
             })
         ]
     ]
