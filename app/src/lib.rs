@@ -9,12 +9,14 @@ struct Model {
     items: Vec<String>,
     error: Option<String>,
     new_todo_title: String,
+    item_to_delete: String,
 }
 
 enum Msg {
     FetchedItems(fetch::Result<Vec<String>>),
     CreateTodo,
     TodoChanged(String),
+    DestroyTodo(String),
 }
 
 
@@ -34,6 +36,16 @@ fn update(msg: Msg, model: &mut Model, _orders: &mut impl Orders<Msg>) {
         }
         Msg::TodoChanged(title) => {
             model.new_todo_title = title;
+        }
+        Msg::DestroyTodo(item_to_delete) => {
+          //let item_index = model.items.position(item_to_delete);
+          let index_of_item_to_delete = 0;
+          // model.items.iter().map(|item| {
+          //   if item.eq(item_to_delete) {
+          //     model.items.remove(item)
+          //   } 
+          // });
+          // let trashed_item = model.items[item_index].remove();
         }
     }
     
@@ -76,7 +88,12 @@ fn view_main(model: &Model) -> Node<Msg> {
     div![
         ul![
             model.items.iter().map(|item| {
-                li![item, button!["destroy"]]
+                li![item, 
+                    button![
+                        "destroy", 
+                        ev(Ev::Click, |_| Msg::DestroyTodo(item)),
+                    ],
+                ]
             })
         ]
     ]
