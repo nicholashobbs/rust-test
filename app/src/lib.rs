@@ -16,7 +16,7 @@ enum Msg {
     FetchedItems(fetch::Result<Vec<String>>),
     CreateTodo,
     TodoChanged(String),
-    DestroyTodo(String),
+    ClearAll,
 }
 
 
@@ -37,15 +37,8 @@ fn update(msg: Msg, model: &mut Model, _orders: &mut impl Orders<Msg>) {
         Msg::TodoChanged(title) => {
             model.new_todo_title = title;
         }
-        Msg::DestroyTodo(item_to_delete) => {
-          //let item_index = model.items.position(item_to_delete);
-          let index_of_item_to_delete = 0;
-          // model.items.iter().map(|item| {
-          //   if item.eq(item_to_delete) {
-          //     model.items.remove(item)
-          //   } 
-          // });
-          // let trashed_item = model.items[item_index].remove();
+        Msg::ClearAll => {
+          model.items.clear();
         }
     }
     
@@ -74,7 +67,9 @@ fn view_input(new_todo_title: &str) -> Node<Msg> {
             "save", 
             ev(Ev::Click, |_| Msg::CreateTodo),
         ],
-        button!["clear all"],
+        button![
+            "clear all",
+            ev(Ev::Click, |_| Msg::ClearAll),],
         input_ev(Ev::Input, Msg::TodoChanged),
         keyboard_ev(Ev::KeyDown, |keyboard_event| {
             IF!(keyboard_event.key() == ENTER_KEY => Msg::CreateTodo)
@@ -89,10 +84,10 @@ fn view_main(model: &Model) -> Node<Msg> {
         ul![
             model.items.iter().map(|item| {
                 li![item, 
-                    button![
-                        "destroy", 
-                        ev(Ev::Click, |_| Msg::DestroyTodo(item)),
-                    ],
+                    // button![
+                    //     "destroy", 
+                    //     ev(Ev::Click, |_| Msg::DestroyTodo(item)),
+                    // ],
                 ]
             })
         ]
