@@ -6,17 +6,22 @@ const ENTER_KEY: &str = "Enter";
 
 #[derive(Default)]
 struct Model {
-    items: Vec<String>,
+    items: Vec<Todo>,
     error: Option<String>,
     new_todo_title: String,
-    item_to_delete: String,
+}
+
+struct Todo {
+    value: String,
+    completed: Bool,
 }
 
 enum Msg {
-    FetchedItems(fetch::Result<Vec<String>>),
+    FetchedItems(fetch::Result<Vec<Todo>>),
     CreateTodo,
     TodoChanged(String),
     ClearAll,
+    RemoveTodo,
 }
 
 
@@ -24,14 +29,16 @@ fn update(msg: Msg, model: &mut Model, _orders: &mut impl Orders<Msg>) {
     use Msg::*;
 
     match msg {
-        FetchedItems(resp) => match resp {
+        Msg::FetchedItems(resp) => match resp {
             Ok(items) => model.items = items,
             Err(e) => model.error = Some(format!("{:?}", e)),
         }
+
         Msg::CreateTodo => {
             let title = model.new_todo_title.trim();
+            let new_todo = Todo { value: title.to_owned(), completed: False };
             if not(title.is_empty()) {
-                model.items.insert(0,title.to_owned());
+                model.items.append(new_todo);
             }
         }
         Msg::TodoChanged(title) => {
@@ -40,6 +47,10 @@ fn update(msg: Msg, model: &mut Model, _orders: &mut impl Orders<Msg>) {
         Msg::ClearAll => {
           model.items.clear();
         }
+
+        Msg::RemoveTodo => {
+            model.items.clear();
+          }
     }
     
 }
@@ -83,18 +94,14 @@ fn view_main(model: &Model) -> Node<Msg> {
     div![
         ul![
             model.items.iter().map(|item| {
-                li![item, 
-                    // button![
-                    //     "destroy", 
-                    //     ev(Ev::Click, |_| Msg::DestroyTodo(item)),
-                    // ],
+                li![item.value, "1234"
                 ]
             })
         ]
     ]
 }
 
-async fn get_todo_items() -> fetch::Result<Vec<String>> {
+async fn get_todo_items() -> fetch::Result<Vec<Todo>> {
     Request::new("/api/todo")
         .method(fetch::Method::Get)
         .fetch()
