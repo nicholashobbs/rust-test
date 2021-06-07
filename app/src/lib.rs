@@ -9,6 +9,7 @@ struct Model {
     items: Vec<String>,
     error: Option<String>,
     new_todo_title: String,
+    item_to_delete: String,
 }
 
 enum Msg {
