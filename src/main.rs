@@ -23,7 +23,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .data(State {
-                todo_items: vec!["asdf".to_owned(),"Asdf".to_owned(),"Qwer".to_owned()],
+                todo_items: vec![],
             })
             .service(get_data)
             .service(page)
